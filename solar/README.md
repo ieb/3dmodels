@@ -1,0 +1,1 @@
+Clamps for mounting solar panels.
