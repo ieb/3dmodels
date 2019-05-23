@@ -1,9 +1,9 @@
-use <libs/bezier/quadratic_bezier.scad>
-use <libs/NACA/shortcuts.scad>
-use <libs/NACA/NACA4.scad>
-use <libs/Extrude_Along_Path/path_extrude.scad>;
+use <../libs/bezier/quadratic_bezier.scad>
+use <../libs/NACA/shortcuts.scad>
+use <../libs/NACA/NACA4.scad>
+use <../libs/Extrude_Along_Path/path_extrude.scad>;
 
-Deltat=0.05;
+Deltat=0.01;
 $fn=100;
 
 
@@ -57,7 +57,7 @@ module nose_cone_with_blades(R=40, H=65, r=10, h=30) {
             drive_plate(R=R,t=3,holes=false);
         drive_plate_screws();
         rotate([90,0,0])
-        cylinder(d=10,h=30);
+        cylinder(d=10,h=55);
         
      }
 }
@@ -70,7 +70,7 @@ module screw(l=15,m=6,h=0) {
     
 }
 
-module drive_plate_screw(R=76/2, l=25, m=6) {
+module drive_plate_screw(R=76/2, l=23, m=7) {
        rotate([90,0,0]) {
         translate([0,-R+10,0])
           screw(l=l,m=m,h=50); 
@@ -105,6 +105,7 @@ module drive_plate_arm(R=76/2, t=2, holes=true, m=5) {
         }
     }
  }
+ 
 
 module drive_plate(withPin=true, R=76/2, t=3, holes=true) {
     color("silver") 
@@ -114,11 +115,32 @@ module drive_plate(withPin=true, R=76/2, t=3, holes=true) {
             // center
             translate([0,0,-t])       
             cylinder(d=30,h=t);
+            translate([0,0,-t-2])       
+            cylinder(d=24,h=2);
+              
             translate([0,0,-t-15])       
             cylinder(d=20,h=15);
+
+            translate([0,0,-t])
+                cylinder(r=R-10,h=t+1);
+            
+            hull() {
+            translate([0,-R+10,-t])
+                cylinder(d=16,h=t);
+              
+            rotate([0,0,120])
+            translate([0,-R+10,-t])
+                cylinder(d=16,h=t);
+            rotate([0,0,-120])
+            translate([0,-R+10,-t])
+                cylinder(d=16,h=t);
+            }
+            
+            /*
               rotate([0,0,0]) drive_plate_arm(R=R,t=t, holes=holes);
               rotate([0,0,120]) drive_plate_arm(R=R,t=t, holes=holes);
               rotate([0,0,-120]) drive_plate_arm(R=R,t=t, holes=holes);
+            */
               if ( !holes ) {
                 translate([0,0,-1])
                     cylinder(d=10,h=t+30);
@@ -131,6 +153,7 @@ module drive_plate(withPin=true, R=76/2, t=3, holes=true) {
                 translate([0,0,0])
                     screw(l=15,m=4);
                 // shaft 
+                echo("Shaft");
                 translate([0,0,-t-29])
                     cylinder(d=10,h=t+30);
           }
@@ -146,12 +169,21 @@ module drive_pin() {
 
 
 module spinner_base() {
-
+    union() {
     difference() {
     nose_cone_with_blades(R=76/2);
      translate([-50,-115,-50])
         cube([100,100,100]);
     }
+     translate([0,-20,0])
+        rotate([-90,0,0])
+        difference() {
+            cylinder(d=33,h=5);
+            translate([0,0,-1])
+            cylinder(d=20,h=7);
+        }
+    }
+    
 }
 
 module spinner_cap() {
@@ -160,6 +192,10 @@ module spinner_cap() {
     nose_cone_with_blades(R=76/2);
      translate([-50,-15,-50])
         cube([100,100,100]);
+     translate([0,-20,0])
+        rotate([-90,0,0])
+            translate([0,0,-1])
+            cylinder(d=33,h=7);
     }
 }
 
@@ -204,7 +240,7 @@ function scaleY(x, y, f, b, ca, sa) =
     ya*ca+xa*sa;
 
 
-module foil(h=150, w=75, a=-25) {
+module foil(h=150, w=75, a=-25, naca=[-.1, .4, .1]) {
         
     // the front edge and back edge are beziers of control points for the
     // shape of the foil
@@ -260,7 +296,7 @@ module foil(h=150, w=75, a=-25) {
         
 
         // draw the aerofoil by construc
-        points = airfoil_data(naca=[-.1, .4, .1], N=60, open=false);
+        points = airfoil_data(naca=naca, N=60, open=false);
         n = len(frontedge)-1;
         np=len(points);
         allpoints = [
@@ -344,7 +380,7 @@ module foil(h=150, w=75, a=-25) {
 * a = angle of attach at tip
 * tr = tip radius
 */
-module blade(R=40, H=65, r=10, h=30, A=24, a=15, tr=220 ) {
+module blade(R=40, H=65, r=10, h=30, A=24, a=15, tr=220, naca=[-.1, .4, .1] ) {
     difference() {
     rotate([0,0,180-A])
         union() {
@@ -361,24 +397,33 @@ module blade(R=40, H=65, r=10, h=30, A=24, a=15, tr=220 ) {
                 }
             } 
     
-            translate([2,-3,-R+5])
+            translate([2,0,-R+5])
             rotate([0,185,0])
-              foil(a=-15,h=(tr-R+5),w=40);
+              foil(a=a,h=(tr-R+5),w=40,naca=naca);
             
         };
+            rotate([0,0,-A])
+            translate([-7,-0.2,-70-15])
+                cube([1.2,4.2,70]);
+            rotate([0,0,-A])
+            translate([3,-0.8,-70-15])
+                cube([1.2,4.2,70]);
    translate([0,15,0])
       nose_cone_with_blades(R=R+2);
+// section            translate([-25,-25,-40])
+//                cube([50,50,20]);
        
     }
 
 };
 
-
+//translate([0,-50,0])
 //spinner_cap();
 //translate([0,-15,0])
-blade(R=75/2, h=30, H=61, tr=120);
+blade(R=75/2, h=30, H=61, tr=120, a=20, naca=4420);
 //foil(t=20,h=120-75/2,R=75/2-10);
 //spinner_base();
+    
 
 //drive_plate();
 //drive_plate_screws();
