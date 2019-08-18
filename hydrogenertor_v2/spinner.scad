@@ -402,12 +402,12 @@ module blade(R=40, H=65, r=10, h=30, A=24, a=15, tr=220, naca=[-.1, .4, .1] ) {
               foil(a=a,h=(tr-R+5),w=40,naca=naca);
             
         };
-            rotate([0,0,-A])
+/*            rotate([0,0,-A])
             translate([-7,-0.2,-70-15])
                 cube([1.2,4.2,70]);
             rotate([0,0,-A])
             translate([3,-0.8,-70-15])
-                cube([1.2,4.2,70]);
+                cube([1.2,4.2,70]); */
    translate([0,15,0])
       nose_cone_with_blades(R=R+2);
 // section            translate([-25,-25,-40])
@@ -418,10 +418,10 @@ module blade(R=40, H=65, r=10, h=30, A=24, a=15, tr=220, naca=[-.1, .4, .1] ) {
 };
 
 //translate([0,-50,0])
-//spinner_cap();
-//translate([0,-15,0])
-blade(R=75/2, h=30, H=61, tr=120, a=20, naca=4420);
-//foil(t=20,h=120-75/2,R=75/2-10);
+//  spinner_cap();
+translate([0,-15,0])
+  blade(R=75/2, h=30, H=61, tr=120, a=20, naca=4420);
+// foil(t=20,h=120-75/2,R=75/2-10);
 //spinner_base();
     
 

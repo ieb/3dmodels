@@ -1,4 +1,4 @@
-use <libs/bezier/quadratic_bezier.scad>
+use <../libs/bezier/quadratic_bezier.scad>
 
 $fn=100;
 Deltat=0.01;
@@ -404,23 +404,133 @@ module legtube(){
 }
 
 
+module ropeholes(){
+    translate([0,0,195])
+     rotate([0,2.5,0])
+     translate([0,0,0]) {
+            rotate([90,0,0])
+            rotate([0,-90,0])
+     
+            translate([0,0, 65])
+             intersection() {
+                 union() {
+                 translate([0,-90,100])
+                    rotate([0,90,0])
+                    difference() {
+                        translate([-30,-25,-30])
+                        cube([60,50,60]);
+                        cylinder(d=12,h=50,center=true);
+                    }
+                 }
+                foilshape(d=35,f=5.6,b=6.3,h=480);
+    
 
-//translate([0,0,304])
-//   nose_cone(r=76/2,h=65);
+                 // 
+                 // cutaway
+//               translate([0,-100,10])
+//                 cube([100,200,900]);
+            }
 
-//bearing_endcap();
+    
+    }
 
-//translate([0,0,4])
-//  body();
-
-
-
-translate([0,0,4]) {
-    legtube();
-    legshell();
-    //translate([-112,5,209])
-    //cube([75,10,72]);
-    legbase_block();
-    legtop_block();
 }
 
+
+
+/*translate([0,0,304])
+   nose_cone(r=76/2,h=65);
+
+bearing_endcap();
+
+translate([0,0,4])
+  body();
+
+//translate([-600,-2000,350]) 
+//cube([500,4550,5]);
+
+translate([0,0,4]) {
+  legtube();
+    ropeholes();
+    legshell();
+  translate([-112,5,209])
+    cube([75,10,72]);
+    legbase_block();
+    legtop_block();
+ }
+ */
+
+//   cylinder(d=64,h=2);
+
+// washer
+module mounting_washer() {
+    difference() {
+       cylinder(d=64,h=2);
+       translate([0,0,-1])
+       cylinder(d=16.5,h=4);
+    }
+}
+
+module mounting_bearing() {
+    difference() {
+        union() {
+        cylinder(d=16,h=((40.5+4)/2)-2.5);
+        cylinder(d=12,h=((40.5+4)/2));
+        }
+        translate([0,0,-1])
+        cylinder(d=8.2,h=40);
+    }
+  
+}
+
+module rudder_bearing_bottom() {
+    difference() {
+        union() {
+        cylinder(d=30,h=3);
+        cylinder(d=19.5,h=30);
+        }
+        translate([0,0,-1])
+        cylinder(d=8,h=40);
+    }
+}
+
+
+/*
+translate([0,0,-2]) {
+    mounting_washer();
+    mounting_bearing();
+}
+*/
+/*
+translate([0,0,((40.5))])
+rotate([180,0,0])
+translate([0,0,-2]) {
+    mounting_washer();
+    mounting_bearing();
+}
+*/
+//    mounting_washer();
+//    mounting_bearing();
+//    rudder_bearing_bottom();
+/*
+Top block
+difference() {
+cylinder(d=80,h=40.5);
+    cube([100,100,100]);
+}
+*/
+module base_pulley() {
+difference() {
+cylinder(d=29,h=29);
+translate([0,0,-1])
+cylinder(d=8,h=35);
+
+translate([0,0,29/2])
+scale([1,1,2.8])
+rotate_extrude(convexity = 10)
+translate([16, 0, 0])
+circle(r = 4);
+}
+}
+
+// base_pulley();
